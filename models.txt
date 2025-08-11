@@ -1,0 +1,5 @@
+ollama run phi4-reasoning
+ollama run phi4-reasoning:plus
+ollama run phi4
+ollama run phi4:mini
+ollama run phi3:mini

@@ -1,0 +1,11 @@
+services:
+  ollama:
+    build: .
+    container_name: ollama-server
+    volumes:
+      - ./ollama_models:/root/.ollama
+    ports:
+      - "127.0.0.1:11434:11434"
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["ollama serve"]
