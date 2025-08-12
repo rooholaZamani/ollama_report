@@ -11,11 +11,14 @@ report_generator = ReportGenerator()
 
 @router.post("/generate", response_model=Report)
 async def generate_report(model: str, prompt: str) -> Report:
-    """
-    Generate a report using the specified model and prompt.
-    """
+    """Generate a report using the specified model and prompt."""
+    if not model or not prompt:
+        raise HTTPException(status_code=400, detail="Model and prompt are required")
+    
     try:
         return await report_generator.generate_report(model, prompt)
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=503, detail=f"Ollama service unavailable: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

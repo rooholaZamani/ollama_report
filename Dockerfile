@@ -7,7 +7,7 @@ FROM ollama/ollama:latest
 # The model will be baked into your final image.
 # RUN ollama pull phi-3:mini
 
-CMD ["sh", "-c", "ollama serve & sleep 5 && ollama pull phi-3:mini && wait"]
+# CMD ["sh", "-c", "ollama serve & sleep 5 && ollama pull phi3:mini && wait"]
 
 # You can add more models if you want
 # For example, to also include gemma:2b:

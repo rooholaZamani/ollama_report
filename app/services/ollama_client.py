@@ -3,10 +3,12 @@ Ollama API client implementation.
 """
 import httpx
 from typing import Dict, Any
+import os
 
 class OllamaClient:
     def __init__(self, base_url: str = "http://localhost:11434"):
-        self.base_url = base_url
+        self.base_url = os.getenv("OLLAMA_BASE_URL", base_url)
+        self.client = httpx.AsyncClient(timeout=30.0)
         self.client = httpx.AsyncClient()
     
     async def generate(self, model: str, prompt: str) -> str:
@@ -17,9 +19,11 @@ class OllamaClient:
             f"{self.base_url}/api/generate",
             json={
                 "model": model,
-                "prompt": prompt
+                "prompt": prompt,
+                "stream": False  # Set to True if you want streaming responses
             }
         )
+        response.raise_for_status() # Ensure we raise an error for bad responses
         return response.json()["response"]
     
     async def list_models(self) -> Dict[str, Any]:
