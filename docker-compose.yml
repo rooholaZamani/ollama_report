@@ -5,7 +5,7 @@ services:
     volumes:
       - ./ollama_models:/root/.ollama
     ports:
-      - "127.0.0.1:11434:11434"
+      - "11434:11434"
     restart: unless-stopped
     command: ["/bin/sh", "-c", "ollama serve & sleep 10 && (ollama list | grep -q 'phi3:mini' || ollama pull phi3:mini) && wait"]
     # entrypoint: ["/bin/sh", "-c"]
