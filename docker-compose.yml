@@ -9,6 +9,11 @@ services:
     restart: unless-stopped
     entrypoint: ["/bin/sh", "-c"]
     command: ["ollama serve"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   fastapi-app:
     build:
@@ -18,6 +23,7 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - ollama
+      ollama:
+        condition: service_healthy 
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434

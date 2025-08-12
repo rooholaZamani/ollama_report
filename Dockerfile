@@ -5,7 +5,9 @@ FROM ollama/ollama:latest
 # --- Pre-pull the models you need ---
 # This command runs during the image build process.
 # The model will be baked into your final image.
-# RUN ollama pull phi-3:mini
+RUN ollama serve & sleep 10 && \
+    ollama pull phi3:mini && \
+
 
 # CMD ["sh", "-c", "ollama serve & sleep 5 && ollama pull phi3:mini && wait"]
 
