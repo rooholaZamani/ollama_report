@@ -4,7 +4,7 @@ API endpoints definition.
 from fastapi import APIRouter, HTTPException
 from app.services.report_generator import ReportGenerator
 from app.models.report import Report
-from typing import Dict, Any
+from typing import Dict, Any, List
 from app.models.checklist import Checklist, ChecklistItem
 import httpx
 
@@ -39,16 +39,16 @@ async def list_models() -> Dict[str, Any]:
 async def get_security_checklist() -> Checklist:
     """دریافت چک لیست امنیت شبکه"""
     security_items = [
-        ChecklistItem(description="آیا فایروال به درستی پیکربندی شده است؟", completed=False),
-        ChecklistItem(description="آیا پسوردهای قوی برای تمام اکانت ها استفاده شده؟", completed=False),
-        ChecklistItem(description="آیا تمام نرم افزارها به روزرسانی شده اند؟", completed=False),
-        ChecklistItem(description="آیا SSL/TLS فعال است؟", completed=False),
-        ChecklistItem(description="آیا backup منظم انجام می شود؟", completed=False),
-        ChecklistItem(description="آیا سطح دسترسی کاربران محدود شده؟", completed=False),
-        ChecklistItem(description="آیا monitoring و logging فعال است؟", completed=False),
-        ChecklistItem(description="آیا VPN برای دسترسی راه دور استفاده می شود؟", completed=False),
-        ChecklistItem(description="آیا antivirus نصب و فعال است؟", completed=False),
-        ChecklistItem(description="آیا پورت های غیرضروری بسته شده اند؟", completed=False)
+        ChecklistItem(id=1, description="آیا فایروال به درستی پیکربندی شده است؟", completed=False),
+        ChecklistItem(id=2, description="آیا پسوردهای قوی برای تمام اکانت ها استفاده شده؟", completed=False),
+        ChecklistItem(id=3, description="آیا تمام نرم افزارها به روزرسانی شده اند؟", completed=False),
+        ChecklistItem(id=4, description="آیا SSL/TLS فعال است؟", completed=False),
+        ChecklistItem(id=5, description="آیا backup منظم انجام می شود؟", completed=False),
+        ChecklistItem(id=6, description="آیا سطح دسترسی کاربران محدود شده؟", completed=False),
+        ChecklistItem(id=7, description="آیا monitoring و logging فعال است؟", completed=False),
+        ChecklistItem(id=8, description="آیا VPN برای دسترسی راه دور استفاده می شود؟", completed=False),
+        ChecklistItem(id=9, description="آیا antivirus نصب و فعال است؟", completed=False),
+        ChecklistItem(id=10, description="آیا پورت های غیرضروری بسته شده اند؟", completed=False)
     ]
     
     return Checklist(title="چک لیست امنیت شبکه", items=security_items)
@@ -63,3 +63,54 @@ async def update_checklist_item(item_index: int, completed: bool) -> dict:
 async def create_custom_checklist(checklist: Checklist) -> Checklist:
     """ایجاد چک لیست سفارشی"""
     return checklist
+
+
+
+@router.post("/checklist/report-simple", response_model=Report)
+async def generate_simple_checklist_report(completed_status: List[bool], model: str = "phi3:mini") -> Report:
+    """تولید گزارش بر اساس وضعیت آیتم های چک لیست (فقط true/false ها)"""
+    
+    # چک لیست پیش فرض (همون که قبلاً ساختیم)
+    security_descriptions = [
+        "آیا فایروال به درستی پیکربندی شده است؟",
+        "آیا پسوردهای قوی برای تمام اکانت ها استفاده شده؟",
+        "آیا تمام نرم افزارها به روزرسانی شده اند؟",
+        "آیا SSL/TLS فعال است؟",
+        "آیا backup منظم انجام می شود؟",
+        "آیا سطح دسترسی کاربران محدود شده؟",
+        "آیا monitoring و logging فعال است؟",
+        "آیا VPN برای دسترسی راه دور استفاده می شود؟",
+        "آیا antivirus نصب و فعال است؟",
+        "آیا پورت های غیرضروری بسته شده اند؟"
+    ]
+    
+    # تطبیق وضعیت با توضیحات
+    completed_items = [desc for i, desc in enumerate(security_descriptions) if i < len(completed_status) and completed_status[i]]
+    incomplete_items = [desc for i, desc in enumerate(security_descriptions) if i < len(completed_status) and not completed_status[i]]
+    
+    prompt = f"""
+    بر اساس چک لیست امنیت شبکه، یک گزارش کامل امنیتی به زبان فارسی تهیه کن:
+
+    ✅ موارد انجام شده ({len(completed_items)} مورد):
+    {chr(10).join([f"- {item}" for item in completed_items])}
+
+    ❌ موارد انجام نشده ({len(incomplete_items)} مورد):
+    {chr(10).join([f"- {item}" for item in incomplete_items])}
+
+    لطفاً گزارش شامل موارد زیر باشد:
+    1. خلاصه وضعیت امنیتی فعلی
+    2. نقاط قوت (موارد انجام شده)
+    3. نقاط ضعف و خطرات (موارد انجام نشده)
+    4. اولویت‌بندی موارد انجام نشده
+    5. توصیه‌های عملی برای بهبود امنیت
+    6. نتیجه‌گیری و درجه امنیت کلی (از 10)
+
+    گزارش باید حرفه‌ای و قابل ارائه به مدیریت باشد.
+    """
+    
+    try:
+        return await report_generator.generate_report(model, prompt)
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=503, detail=f"Ollama service unavailable: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
