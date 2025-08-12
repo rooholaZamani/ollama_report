@@ -3,9 +3,12 @@ Report model definition.
 """
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class Report(BaseModel):
+     
+    model_config = ConfigDict(protected_namespaces=())
+
     title: str
     content: str
     generated_at: Optional[datetime] = None

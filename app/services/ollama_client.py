@@ -8,8 +8,8 @@ import os
 class OllamaClient:
     def __init__(self, base_url: str = "http://localhost:11434"):
         self.base_url = os.getenv("OLLAMA_BASE_URL", base_url)
-        self.client = httpx.AsyncClient(timeout=30.0)
-        self.client = httpx.AsyncClient()
+        self.client = httpx.AsyncClient(timeout=120.0)
+    
     
     async def generate(self, model: str, prompt: str) -> str:
         """
@@ -31,4 +31,5 @@ class OllamaClient:
         List available models.
         """
         response = await self.client.get(f"{self.base_url}/api/tags")
+        response.raise_for_status()
         return response.json()
