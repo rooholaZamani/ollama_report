@@ -3,6 +3,7 @@ Report model definition.
 """
 from datetime import datetime
 from typing import Optional
+from pydantic import BaseModel
 
 class Report(BaseModel):
     title: str
