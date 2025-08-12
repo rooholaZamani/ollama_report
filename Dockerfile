@@ -6,7 +6,7 @@ FROM ollama/ollama:latest
 # This command runs during the image build process.
 # The model will be baked into your final image.
 RUN ollama serve & sleep 10 && \
-    ollama pull phi3:mini && \
+    ollama pull phi3:mini
 
 
 # CMD ["sh", "-c", "ollama serve & sleep 5 && ollama pull phi3:mini && wait"]
