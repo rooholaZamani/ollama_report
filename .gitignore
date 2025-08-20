@@ -1,0 +1,33 @@
+# Ollama specific
+ollama_models/models/blobs/
+ollama_models/history
+
+# Docker
+.env
+docker-compose.override.yml
+
+# Archives
+*.rar
+*.zip
+*.tar.gz
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment variables
+.env.local
+.env.*.local
+
+# SSH Keys
+id_ed25519
+id_ed25519.pub

@@ -1,0 +1,22 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-server
+    volumes:
+      - ./ollama_models:/root/.ollama
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    # command: ["/bin/sh", "-c", "ollama serve & sleep 10 && (ollama list | grep -q 'phi3:mini' || ollama pull phi3:mini) && wait"]
+    # entrypoint: ["/bin/sh", "-c"]
+
+
+  fastapi-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+    container_name: fastapi-report-service
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
