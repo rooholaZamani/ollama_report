@@ -1,15 +1,6 @@
 services:
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama-server
-    volumes:
-      - ./ollama_models:/root/.ollama
-    ports:
-      - "11434:11434"
-    restart: unless-stopped
-    # command: ["/bin/sh", "-c", "ollama serve & sleep 10 && (ollama list | grep -q 'phi3:mini' || ollama pull phi3:mini) && wait"]
-    # entrypoint: ["/bin/sh", "-c"]
-
+  # Ollama server is now external at 192.168.1.50:11434
+  # No need to run local ollama container
 
   fastapi-app:
     build:
@@ -19,4 +10,13 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_BASE_URL=http://192.168.1.50:11434
+      - BACKEND_BASE_URL=http://backend-reports:8080/api
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - reports-network
+
+networks:
+  reports-network:
+    external: true

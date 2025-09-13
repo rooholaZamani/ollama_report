@@ -6,7 +6,7 @@ from typing import Dict, Any
 import os
 
 class OllamaClient:
-    def __init__(self, base_url: str = "http://localhost:11434"):
+    def __init__(self, base_url: str = "http://192.168.1.50:11434"):
         self.base_url = os.getenv("OLLAMA_BASE_URL", base_url)
         self.client = httpx.AsyncClient(timeout=120.0)
     
