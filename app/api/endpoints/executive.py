@@ -30,7 +30,7 @@ router = APIRouter(
     tags=["Executive Reports"]
 )
 report_generator = ReportGenerator()
-BACKEND_BASE_URL = "http://backend-reports:8080/api"
+BACKEND_BASE_URL = "http://192.168.1.50:8080/api"
 
 @router.post("/governor", response_model=Report)
 async def generate_governor_report(
