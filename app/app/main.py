@@ -1,9 +1,9 @@
 """
 Main application entry point.
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 # Import routers from the new endpoint files
-from app.api.endpoints import checklist, incidents, vulnerabilities, models
+from app.api.endpoints import incidents, vulnerabilities, models, checklist, assessments
 
 app = FastAPI(
     title="Ollama Report Generator",
